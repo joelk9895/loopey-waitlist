@@ -44,7 +44,7 @@ export default function Cta() {
   }, []);
 
   return (
-    <section className="bg-black w-full min-h-screen flex flex-col items-center justify-center gap-8 relative">
+    <section className="bg-black w-full min-h-screen flex flex-col items-center justify-center gap-8 relative px-4 sm:px-8">
       <div className="flex flex-col gap-4 items-center absolute top-10 left-10 -rotate-12">
         <div className="flex gap-4">
           {" "}
@@ -71,15 +71,15 @@ export default function Cta() {
         </svg>
       </div>
 
-      <div className="flex flex-col items-center gap-8">
-        <h3 className="text-white text-7xl font-serif">
+      <div className="flex flex-col items-center gap-8 w-full max-w-5xl">
+        <h3 className="text-white text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-center break-words">
           Ready to take the plunge?
         </h3>
         {/* Main button */}
-        <div className="p-2 border border-blue-300/30 rounded-full w-fit">
+        <div className="p-2 border border-blue-300/30 rounded-full w-fit max-w-full">
           <div className="p-2 border border-blue-600/60 hover:scale-99 transition rounded-full">
             <div className="p-2 border-3 border-blue-600 hover:scale-99 transition rounded-full">
-              <button className="bg-black font-bold text-white py-2 px-8 rounded-full w-fit text-3xl hover:scale-95 focus:scale-90 transition">
+              <button className="bg-black font-bold text-white py-2 px-6 sm:px-8 rounded-full w-full sm:w-fit text-lg sm:text-2xl md:text-3xl hover:scale-95 focus:scale-90 transition">
                 Join Waitlist
               </button>
             </div>

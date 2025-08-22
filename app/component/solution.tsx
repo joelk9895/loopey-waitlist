@@ -52,11 +52,11 @@ export default function Solution() {
   return (
     <section
       ref={sectionRef}
-      className="flex flex-col items-center justify-center gap-8 min-h-screen bg-gradient-to-b from-black to-blue-600 via-blue-500 text-white min-w-full"
+      className="flex flex-col items-center justify-center gap-8 min-h-screen bg-gradient-to-b from-black to-blue-600 via-blue-500 text-white min-w-full px-4 sm:px-8"
     >
       <h3
         ref={textRef}
-        className="text-7xl leading-relaxed -tracking-wider whitespace-pre-wrap font-regular text-white max-w-7xl text-center"
+        className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-relaxed -tracking-wider whitespace-pre-wrap font-regular text-white max-w-5xl text-center break-words"
         style={{ perspective: "1000px" }}
       >
         {words.map((word, index) => (

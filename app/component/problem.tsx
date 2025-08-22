@@ -64,11 +64,11 @@ export default function Problem() {
   return (
     <section
       ref={sectionRef}
-      className="flex flex-col items-center justify-center gap-8 min-h-screen bg-black w-full"
+      className="flex flex-col items-center justify-center gap-8 min-h-screen bg-black w-full px-4 sm:px-8"
     >
       <h3
         ref={textRef}
-        className="text-7xl font-serif -tracking-wider whitespace-pre-wrap font-regular text-black max-w-7xl text-center"
+        className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif -tracking-wider whitespace-pre-wrap font-regular text-black max-w-5xl text-center break-words"
       >
         {splitText(
           "Wasting hours with bots that don’t listen or support teams that don’t get it is frustrating. It kills trust, slows you down, and makes you want to quit."
