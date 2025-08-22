@@ -3,10 +3,10 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function Promise() {
-  const sectionRef = useRef(null);
-  const textRef = useRef(null);
-  const wordsRef = useRef([]);
-  const backgroundRef = useRef(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const textRef = useRef<HTMLHeadingElement | null>(null);
+  const wordsRef = useRef<HTMLSpanElement[]>([]);
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -103,7 +103,7 @@ export default function Promise() {
       );
 
     // Enhanced mouse parallax with 3D depth
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
 
@@ -189,7 +189,9 @@ export default function Promise() {
         {words.map((word, index) => (
           <span
             key={index}
-            ref={(el) => (wordsRef.current[index] = el)}
+            ref={(el) => {
+              if (el) wordsRef.current[index] = el;
+            }}
             className="inline-block mr-4"
             style={{
               transformStyle: "preserve-3d",
