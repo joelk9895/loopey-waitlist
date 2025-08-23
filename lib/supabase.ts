@@ -29,17 +29,18 @@ export async function addToWaitlist(
     // Log what we're trying to insert
     console.log("Attempting to insert:", { email, name, source });
 
+    // Properly typed record for insertion
+    const newEntry = {
+      email,
+      name: name || null,
+      created_at: new Date().toISOString(),
+      source: source || "website",
+    };
+    
     // Perform the insertion
     const { data, error } = await supabase
       .from("waitlist")
-      .insert([
-        {
-          email,
-          name: name || null,
-          created_at: new Date().toISOString(),
-          source: source || "website",
-        },
-      ] as any)
+      .insert([newEntry])
       .select();
 
     if (error) {
@@ -49,18 +50,22 @@ export async function addToWaitlist(
 
     console.log("Successfully added to waitlist:", data);
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error adding to waitlist:", error);
+
+    // Use type guards to safely access error properties
+    const errObj = typeof error === "object" && error !== null ? error as Record<string, unknown> : {};
+
     console.error("Error details:", {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-      statusCode: error.statusCode,
+      name: errObj.name,
+      message: errObj.message,
+      code: errObj.code,
+      details: errObj.details,
+      hint: errObj.hint,
+      statusCode: errObj.statusCode,
     });
 
-    if (error.code === "23505") {
+    if (errObj.code === "23505") {
       // PostgreSQL unique violation code
       return {
         success: false,
@@ -69,7 +74,7 @@ export async function addToWaitlist(
     }
 
     // Check for connection issues
-    if (error.message?.includes("Failed to fetch")) {
+    if (typeof errObj.message === "string" && errObj.message.includes("Failed to fetch")) {
       return {
         success: false,
         error:
@@ -78,7 +83,10 @@ export async function addToWaitlist(
     }
 
     // Check for table not found issues
-    if (error.message?.includes("does not exist") || error.code === "42P01") {
+    if (
+      (typeof errObj.message === "string" && errObj.message.includes("does not exist")) ||
+      errObj.code === "42P01"
+    ) {
       return {
         success: false,
         error:
@@ -88,7 +96,7 @@ export async function addToWaitlist(
 
     return {
       success: false,
-      error: `Failed to join waitlist: ${error.message || "Unknown error"}`,
+      error: `Failed to join waitlist: ${errObj.message || "Unknown error"}`,
     };
   }
 }

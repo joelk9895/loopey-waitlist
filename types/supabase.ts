@@ -1,33 +1,6 @@
-export type WaitlistEntry = {
-  id: number;
-  email: string;
-  name: string | null;
-  created_at: string;
-  referral_code?: string;
-  source?: string | null;
-};
+import { Database as GeneratedDatabase } from './database.types';
 
-export type Database = {
-  public: {
-    Tables: {
-      waitlist: {
-        Row: WaitlistEntry;
-        Insert: {
-          email: string;
-          name?: string | null;
-          created_at?: string;
-          referral_code?: string;
-          source?: string | null;
-        };
-        Update: {
-          id?: number;
-          email?: string;
-          name?: string | null;
-          created_at?: string;
-          referral_code?: string;
-          source?: string | null;
-        };
-      };
-    };
-  };
-};
+export type Database = GeneratedDatabase;
+export type WaitlistEntry = Database['public']['Tables']['waitlist']['Row'];
+export type WaitlistInsert = Database['public']['Tables']['waitlist']['Insert'];
+export type WaitlistUpdate = Database['public']['Tables']['waitlist']['Update'];
