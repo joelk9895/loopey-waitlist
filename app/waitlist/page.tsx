@@ -70,13 +70,6 @@ export default function WaitlistPage() {
     setError("");
 
     try {
-      // Prepare user data with optional referral source
-      let userData = {
-        email,
-        name: name || null,
-        source: referralSource,
-      };
-
       // Add the user to our Supabase waitlist table
       const {
         success,
@@ -94,7 +87,10 @@ export default function WaitlistPage() {
       if (name) localStorage.setItem("waitlistName", name);
 
       // Store the referral code if available
-      const responseData = data as any;
+      interface WaitlistResponse {
+        referral_code?: string;
+      }
+      const responseData = data as WaitlistResponse[];
       if (responseData && responseData[0]?.referral_code) {
         localStorage.setItem(
           "waitlistReferralCode",
@@ -103,11 +99,15 @@ export default function WaitlistPage() {
       }
 
       setSubmitted(true);
-    } catch (err: any) {
-      setError(
-        err.message ||
-          "There was an error submitting your information. Please try again."
-      );
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(
+          err.message ||
+            "There was an error submitting your information. Please try again."
+        );
+      } else {
+        setError("An unknown error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -188,7 +188,7 @@ export default function WaitlistPage() {
               </span>
             </h2>
             <p className="text-lg sm:text-xl text-white/80 mb-8">
-              We've added {name ? name : "you"} to our waitlist. We'll notify
+              We&apos;ve added {name ? name : "you"} to our waitlist. We&apos;ll notify
               you when we launch!
             </p>
 
@@ -481,7 +481,7 @@ export default function WaitlistPage() {
             </div>
             <h3 className="text-xl font-serif mb-3">No Spam</h3>
             <p className="opacity-80 text-white/70">
-              We'll only email you when we have important updates to share.
+              We&apos;ll only email you when we have important updates to share.
             </p>
           </div>
 
