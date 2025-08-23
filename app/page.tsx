@@ -7,6 +7,7 @@ import Problem from "./component/problem";
 import Solution from "./component/solution";
 import Promise from "./component/promise";
 import Cta from "./component/cta";
+import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -169,9 +170,11 @@ export default function Home() {
           >
             <div className="p-2 border border-blue-600/60 hover:scale-99 transition rounded-full">
               <div className="p-2 border-3 border-blue-600 hover:scale-99 transition rounded-full">
-                <button className="bg-black font-bold text-white py-2 px-6 sm:px-8 rounded-full w-fit text-lg sm:text-2xl md:text-3xl hover:scale-95 focus:scale-90 transition">
-                  Join Waitlist
-                </button>
+                <Link href="/waitlist">
+                  <button className="bg-black font-bold text-white py-2 px-6 sm:px-8 rounded-full w-fit text-lg sm:text-2xl md:text-3xl hover:scale-95 focus:scale-90 transition">
+                    Join Waitlist
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

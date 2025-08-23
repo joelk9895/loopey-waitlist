@@ -1,0 +1,268 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function EmailDashboard() {
+  const router = useRouter();
+  const [subject, setSubject] = useState("");
+  const [emailContent, setEmailContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+
+  async function handleSendEmail() {
+    if (!subject || !emailContent) {
+      alert("Please fill in both subject and email content");
+      return;
+    }
+
+    if (
+      !confirm(
+        "Are you sure you want to send this email to all waitlist subscribers?"
+      )
+    ) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/email/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          subject,
+          htmlContent: emailContent,
+        }),
+      });
+
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error("Failed to send emails:", error);
+      setResult({ success: false, message: "Failed to send emails" });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-8">
+      <div className="bg-gray-900 p-6 rounded-xl border border-blue-600/30">
+        <h2 className="text-xl font-bold mb-4">
+          Send Email to All Subscribers
+        </h2>
+
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="subject"
+              className="block text-sm font-medium text-gray-300 mb-1"
+            >
+              Email Subject
+            </label>
+            <input
+              id="subject"
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Important update about Loopey"
+              className="w-full px-4 py-2 rounded-md bg-black border border-blue-300/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="content"
+              className="block text-sm font-medium text-gray-300 mb-1"
+            >
+              Email Content (HTML)
+            </label>
+            <textarea
+              id="content"
+              value={emailContent}
+              onChange={(e) => setEmailContent(e.target.value)}
+              placeholder="<p>Hello {'{{name}}'},</p><p>We're excited to share some updates with you...</p>"
+              rows={10}
+              className="w-full px-4 py-2 rounded-md bg-black border border-blue-300/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+            />
+            <p className="mt-2 text-xs text-gray-400">
+              Use {`{{name}}`} to personalize the email with the
+              subscriber&apos;s name.
+            </p>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleSendEmail}
+              disabled={isLoading}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-medium disabled:opacity-50 flex items-center"
+            >
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Sending...
+                </>
+              ) : (
+                "Send Email"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {result && (
+        <div
+          className={`p-4 rounded-md ${
+            result.success ? "bg-green-900/30" : "bg-red-900/30"
+          } border ${
+            result.success ? "border-green-500/30" : "border-red-500/30"
+          }`}
+        >
+          <h3 className="font-medium mb-2">
+            {result.success ? "Email Sent" : "Error"}
+          </h3>
+          <p>{result.message}</p>
+        </div>
+      )}
+
+      <div className="bg-gray-900 p-6 rounded-xl border border-blue-600/30">
+        <h2 className="text-xl font-bold mb-4">Email Template Examples</h2>
+
+        <div className="space-y-4">
+          <div
+            className="p-4 border border-blue-300/20 rounded-md hover:border-blue-300/40 cursor-pointer"
+            onClick={() => {
+              setSubject("Welcome to the Loopey Waitlist!");
+              setEmailContent(`
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h1 style="color: #0052d4; margin-bottom: 20px;">Welcome to Loopey!</h1>
+  
+  <p>Hello \\{\\{name\\}\\},</p>
+  
+  <p>Thank you for joining our waitlist! We're excited to have you as one of our early supporters.</p>
+  
+  <p>We're hard at work building Loopey - an intelligent support system that turns confusion into clarity. We'll keep you updated on our progress and let you know as soon as we're ready to launch.</p>
+  
+  <p>In the meantime, if you have any questions or feedback, feel free to reply to this email.</p>
+  
+  <p>Best regards,<br>The Loopey Team</p>
+  
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+    <p>You're receiving this email because you joined the Loopey waitlist.</p>
+  </div>
+</div>
+                 `);
+            }}
+          >
+            <h3 className="font-medium text-blue-400">Welcome Email</h3>
+            <p className="text-sm text-gray-400">
+              Initial email when someone joins the waitlist
+            </p>
+          </div>
+
+          <div
+            className="p-4 border border-blue-300/20 rounded-md hover:border-blue-300/40 cursor-pointer"
+            onClick={() => {
+              setSubject("Exciting Update from Loopey!");
+              setEmailContent(`
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h1 style="color: #0052d4; margin-bottom: 20px;">We've Got News!</h1>
+  
+  <p>Hello \\{\\{name\\}\\},</p>
+  
+  <p>We wanted to share an exciting update on Loopey's progress!</p>
+  
+  <p>We've hit a major milestone in development and we're one step closer to launching. Here's what we've been working on:</p>
+  
+  <ul style="margin-bottom: 20px;">
+    <li>Feature 1 - Description of the feature</li>
+    <li>Feature 2 - Description of the feature</li>
+    <li>Feature 3 - Description of the feature</li>
+  </ul>
+  
+  <p>We're still on track to launch in [Launch Month], and as a waitlist member, you'll be among the first to get access.</p>
+  
+  <p>Stay tuned for more updates!</p>
+  
+  <p>Best regards,<br>The Loopey Team</p>
+  
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+    <p>You're receiving this email because you joined the Loopey waitlist. <a href="\\{\\{unsubscribe_link\\}\\}" style="color: #0052d4;">Unsubscribe</a></p>
+  </div>
+</div>
+                 `);
+            }}
+          >
+            <h3 className="font-medium text-blue-400">Progress Update</h3>
+            <p className="text-sm text-gray-400">
+              Keep subscribers engaged with progress updates
+            </p>
+          </div>
+
+          <div
+            className="p-4 border border-blue-300/20 rounded-md hover:border-blue-300/40 cursor-pointer"
+            onClick={() => {
+              setSubject("Loopey is Launching Soon - Get Ready!");
+              setEmailContent(`
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h1 style="color: #0052d4; margin-bottom: 20px;">We're Launching Soon!</h1>
+  
+  <p>Hello \\{\\{name\\}\\},</p>
+  
+  <p>The moment we've all been waiting for is almost here! Loopey will be launching in just [X] days, and as a waitlist member, you'll get priority access.</p>
+  
+  <p>Here's what you need to know:</p>
+  
+  <ul style="margin-bottom: 20px;">
+    <li>Launch Date: [Date]</li>
+    <li>You'll receive an email with your exclusive access link</li>
+    <li>The first 100 users will get [Special Bonus]</li>
+  </ul>
+  
+  <p style="text-align: center; margin: 30px 0;">
+    <a href="https://yourwebsite.com" style="background-color: #0052d4; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Get Ready</a>
+  </p>
+  
+  <p>We can't wait to welcome you to Loopey and hear your feedback!</p>
+  
+  <p>Best regards,<br>The Loopey Team</p>
+  
+  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+    <p>You're receiving this email because you joined the Loopey waitlist. <a href="\\{\\{unsubscribe_link\\}\\}" style="color: #0052d4;">Unsubscribe</a></p>
+  </div>
+</div>
+                 `);
+            }}
+          >
+            <h3 className="font-medium text-blue-400">Launch Announcement</h3>
+            <p className="text-sm text-gray-400">
+              Let subscribers know when you're launching
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
